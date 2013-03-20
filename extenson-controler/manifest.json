@@ -1,0 +1,17 @@
+{
+  "name": "Chrome Command Line Tab Controller",
+  "version": "1",
+  "manifest_version": 2,
+  "description": "pitu pitu",
+  "icons": {
+    "16": "icon-16.png",
+    "128": "icon-128.png"
+  },
+  "default_locale": "en",
+  
+  "background": {
+    "persistent": true,
+    "page": "index.html"
+  },
+  "permissions": ["tabs","experimental", "pageCapture", "<all_urls>"]
+}

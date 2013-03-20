@@ -1,0 +1,54 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import sys
+import base64
+from websocket import create_connection
+
+commands = ['create','update', 'open','refresh', 'left', 'right', 'moveby', 'close', 'close-last', 'close-first', 'grab']
+
+
+def listCommands():
+    print "Commands: \n"
+    print commands
+
+arg = sys.argv[1:]
+
+if arg:
+    command = arg[0]
+    opt1 = None
+    opt2 = None
+    
+    com = [command]
+    
+    if len(arg) == 2:
+        opt1 = arg[1]
+        com.append(opt1)
+    
+    if len(arg) == 3:
+        opt2 = arg[2]
+        com.append(opt2)
+    
+    if command in commands:
+        try:
+            ws = create_connection("ws://127.0.0.1:8888/client")
+
+            ws.send(" ".join(com))
+            
+            if command == "grab":
+                data = ws.recv()
+                if data:
+                    file = open("zrzut.jpg", "wb")
+                    print data[:100]
+                    img_data = data.split(",")
+                    file.write(img_data[1].decode('base64'))
+                    file.close()
+
+            ws.close()
+        except:
+            print "Server is down."
+    else:
+        listCommands()
+else:
+    listCommands()
+
