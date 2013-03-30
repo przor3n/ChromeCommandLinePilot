@@ -1,8 +1,8 @@
 {
   "name": "Chrome Command Line Tab Controller",
-  "version": "1",
+  "version": "1.2",
   "manifest_version": 2,
-  "description": "pitu pitu",
+  "description": "Websocket client to controll tabs remotely",
   "icons": {
     "16": "icon-16.png",
     "128": "icon-128.png"

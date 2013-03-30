@@ -1,0 +1,105 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import sys, getopt
+import base64
+from websocket import create_connection
+
+commands = ['create','update', 'open','refresh', 'left', 'right', 'moveby', 'close', 'close-last', 'close-first', 'grab']
+
+
+#list of commands
+# needs to be made better
+def listCommands():
+    print "Commands: \n"
+    print commands
+
+
+def main():
+    #handler for websocket connection
+    ws = None
+
+    #parse args or GTFO
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "cuoRlrmCLFg", commands)
+    except getopt.GetoptError as err:
+        print str(err)
+        listCommands()
+        sys.exit(2)
+ 
+    #open websocket connection or GTFO
+    try:
+        ws = create_connection("ws://127.0.0.1:8888/client")
+    except:
+        print "Server is down"
+        sys.exit(2)
+
+    #parse command
+    # create command
+    # if not empty run command
+    command = ""
+    for o, a in opts:
+        if o in ("-c","--create"):
+            command = "create"
+            if len(args) == 1:
+                command = command + " " + args[0]
+       
+        elif o in ("-u", "--update"):
+            command = "update"
+
+        elif o in ("-o", "--open"):
+            if len(args) == 1:
+                command = "open " + args[0]
+            else:
+                sys.exit(2)
+
+        elif o in ("-R", "--refresh"):
+            command = "refresh"
+        
+        elif o in ("-l", "--left"):
+            command = "left"
+
+        elif o in ("-r", "--right"):
+            command = "right"
+
+        elif o in ("-m", "--moveby"):
+            if len(args) == 1:
+                command = "moveby "+args[0]
+
+        elif o in ("-C", "--close"):
+            if len(args) == 1:
+                command = "close "+args[0]
+
+        elif o in ("-L", "--close-last"):
+            command = "close-last"
+
+        elif o in ("-F", "--close-first"):
+            command = "close-first"
+
+        elif o in ("-g" ,"--grab"):
+            command = "grab"
+
+    if command != "":
+        ws.send(command)
+
+    if command == "grab":
+        data = ws.recv()
+        if data:
+            file = None
+
+            if len(args) == 1:
+                file = open(args[0], "wb")
+            else:
+                file = open("zrzut.jpg", "wb")
+            print data[:100]
+            img_data = data.split(",")
+            file.write(img_data[1].decode('base64'))
+            file.close()
+
+    if ws != None:
+        ws.close()
+
+
+
+if __name__ == "__main__":
+    main()
